@@ -48,20 +48,6 @@ function consumirTempo(lat, lon) {
     return tempo;
 }
 
-function consultarEndereco(google_map_pos) {
-
-    var google_maps_geocoder = new google.maps.Geocoder();
-
-    google_maps_geocoder.geocode(
-        { 'latLng': google_map_pos },
-        function (results, status) {
-            //console.log(results);
-            return results;
-        }
-    );
-
-}
-
 function mostrarMapa(position) {
 
     var myLatlng = { lat: position.coords.latitude, lng: position.coords.longitude };
@@ -93,19 +79,28 @@ function mostrarMapa(position) {
         map.setCenter(myLatlng);
         map.panTo(marker.getPosition());
 
-        coordInfoWindow.close();
-        coordInfoWindow = new google.maps.InfoWindow();
-        coordInfoWindow.setContent(createInfoWindowContent(myLatlng, 8, consumirTempo(myLatlng.lat, myLatlng.lng)));
-        coordInfoWindow.setPosition(myLatlng);
-        coordInfoWindow.open(map);
+        var propriedades = [];
+
+        var google_maps_geocoder = new google.maps.Geocoder();
+
+        google_maps_geocoder.geocode(
+            { 'latLng': myLatlng },
+            function (results, status) {
+                coordInfoWindow.close();
+                coordInfoWindow = new google.maps.InfoWindow();
+                coordInfoWindow.setContent(createInfoWindowContent(myLatlng, 8, consumirTempo(myLatlng.lat, myLatlng.lng), results));
+                coordInfoWindow.setPosition(myLatlng);
+                coordInfoWindow.open(map);
+            }
+        );
+
 
     });
 }
 
-function createInfoWindowContent(latLng, zoom, tempo) {
+function createInfoWindowContent(latLng, zoom, tempo, proximidades) {
 
     var endereco = '';
-    var proximidades = consultarEndereco(latLng);
     var retorno = JSON.parse(tempo);
 
     var tempolocal = '';
@@ -114,7 +109,10 @@ function createInfoWindowContent(latLng, zoom, tempo) {
     }
 
     if (proximidades != undefined && proximidades.length > 0) {
-        endereo = proximidades[0];
+        // for (var i = 0; i < proximidades[0].address_components.length; i++) {
+        //    console.log(proximidades[0].address_components[i]);
+        // }
+        endereco = proximidades[0].formatted_address;
     } else {
         endereco = retorno.name + ', ' + retorno.sys.country;
     }
