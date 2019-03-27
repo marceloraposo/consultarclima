@@ -1,8 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\server"
+    "\\frontend",
+    "\\frontend\\Scripts"
   ],
-  "SelectedNode": "\\server\\index.js",
+  "SelectedNode": "\\frontend\\Scripts\\tempo.js",
   "PreviewInSolutionExplorer": false
 }

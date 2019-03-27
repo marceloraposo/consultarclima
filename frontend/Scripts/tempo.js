@@ -32,7 +32,7 @@ function consumirTempo(lat, lon) {
     var tempo = '';
 
     $.ajax({
-        url: "http://localhost:2019/tempo/ver/" + lat + "/" + lon,
+        url: "https://consultarclima-consultarclima.7e14.starter-us-west-2.openshiftapps.com/tempo/ver/" + lat + "/" + lon,
         type: "GET",
         contentType: "application/json;charset=utf-8",
         dataType: "json",
