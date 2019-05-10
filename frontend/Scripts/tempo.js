@@ -48,6 +48,27 @@ function consumirTempo(lat, lon) {
     return tempo;
 }
 
+function consumirForecast(lat, lon) {
+
+    var tempo = '';
+
+    $.ajax({
+        url: "http://localhost:8080/tempo/forecast/" + lat + "/" + lon,
+        type: "GET",
+        contentType: "application/json;charset=utf-8",
+        dataType: "json",
+        async: false,
+        complete: function (result) {
+            tempo = result.responseText;
+        },
+        error: function (errormessage) {
+            tempo = '';
+        }
+    });
+
+    return tempo;
+}
+
 function mostrarMapa(position) {
 
     var myLatlng = { lat: position.coords.latitude, lng: position.coords.longitude };
@@ -79,7 +100,10 @@ function mostrarMapa(position) {
         map.setCenter(myLatlng);
         map.panTo(marker.getPosition());
 
-        var propriedades = [];
+        var forecastConsumo = ConsultarForecast(consumirForecast(myLatlng.lat, myLatlng.lng));
+
+        $("#forecast").html(ComporForescat(forecastConsumo));
+        //console.log(ComporForescat(forecastConsumo));
 
         var google_maps_geocoder = new google.maps.Geocoder();
 
@@ -94,6 +118,21 @@ function mostrarMapa(position) {
             }
         );
 
+        $("#forecast").owlCarousel(			   {
+             loop:false,
+             nav:true,
+             responsive:{
+                 0:{
+                     items:1
+                 },
+                 600:{
+                     items:3
+                 },
+                 1000:{
+                     items:5
+                 }
+             }
+        });
 
     });
 }
@@ -101,11 +140,11 @@ function mostrarMapa(position) {
 function createInfoWindowContent(latLng, zoom, tempo, proximidades) {
 
     var endereco = '';
-    var retorno = JSON.parse(tempo);
+    var retornoTempo = JSON.parse(tempo);
 
     var tempolocal = '';
-    for (var i = 0; i < retorno.weather.length; i++) {
-        tempolocal = tempolocal + ' ' + retorno.weather[parseInt(i)].description;
+    for (var i = 0; i < retornoTempo.weather.length; i++) {
+        tempolocal = tempolocal + ' ' + retornoTempo.weather[parseInt(i)].description;
     }
 
     if (proximidades != undefined && proximidades.length > 0) {
@@ -114,22 +153,55 @@ function createInfoWindowContent(latLng, zoom, tempo, proximidades) {
         // }
         endereco = proximidades[0].formatted_address;
     } else {
-        endereco = retorno.name + ', ' + retorno.sys.country;
+        endereco = retornoTempo.name + ', ' + retornoTempo.sys.country;
     }
 
     return [
         endereco,
         'Latitude: ' + latLng.lat.toFixed(3),
         'Longitude: ' + latLng.lng.toFixed(3),
-        'Temperatura (min): ' + retorno.main.temp_min + '°C',
-        'Temperatura (max): ' + retorno.main.temp_max + '°C',
-        'Temperatura: ' + retorno.main.temp + '°C',
-        'Nível do Mar: ' + (retorno.main.sea_level != null ? retorno.main.sea_level + ' hPa' : ' '),
-        'Pressão: ' + retorno.main.pressure + ' hPa',
-        'Umidade: ' + retorno.main.humidity + ' %',
+        'Temperatura (min): ' + retornoTempo.main.temp_min + '°C',
+        'Temperatura (max): ' + retornoTempo.main.temp_max + '°C',
+        'Temperatura: ' + retornoTempo.main.temp + '°C',
+        'Nível do Mar: ' + (retornoTempo.main.sea_level != null ? retornoTempo.main.sea_level + ' hPa' : ' '),
+        'Pressão: ' + retornoTempo.main.pressure + ' hPa',
+        'Umidade: ' + retornoTempo.main.humidity + ' %',
         'Tempo: ' + tempolocal,
-        'Vento (inclinação): ' + retorno.wind.deg + ' °',
-        'Vento (velocidade): ' + retorno.wind.speed + ' m/s',
-        'Nuvens: ' + retorno.clouds.all + ' %'
+        'Vento (inclinação): ' + retornoTempo.wind.deg + ' °',
+        'Vento (velocidade): ' + retornoTempo.wind.speed + ' m/s',
+        'Nuvens: ' + retornoTempo.clouds.all + ' %'
     ].join('<br>');
 } 
+
+function ConsultarForecast(forecast){
+    var retornoForecast = JSON.parse(forecast);
+
+    var forecastlocal = [];
+    for (var i = 0; i < retornoForecast.list.length; i++) {
+
+        for(var j = 0; j < retornoForecast.list[i].weather.length; j++) {
+            var date = new Date(retornoForecast.list[i].dt * 1000); 
+            forecastlocal.push({ "hora": date.toLocaleString(),
+                                 "min": retornoForecast.list[i].main.temp_min + '°C',
+                                 "max": retornoForecast.list[i].main.temp_max + '°C',  
+                                 "temp":  retornoForecast.list[i].main.temp + '°C',
+                                 "nivelDoMar": (retornoForecast.list[i].main.sea_level != null ? retornoForecast.list[i].main.sea_level + ' hPa' : ' '),
+                                 "pressao" : retornoForecast.list[i].main.pressure + ' hPa',
+                                 "unidade" : retornoForecast.list[i].main.humidity + ' %',
+                                 "vento_inclinacao" : retornoForecast.list[i].wind.deg + ' °',
+                                 "vento_velocidade" : retornoForecast.list[i].wind.speed + ' m/s',
+                                 "descricao": retornoForecast.list[i].weather[parseInt(j)].description});
+        }
+    }
+
+    return forecastlocal;
+}
+
+function ComporForescat(forecastResultado){
+    var retorno = '';
+    for (var i = 0; i < forecastResultado.length; i++) {
+        //retorno.push("<div id='carousel"+i+"'>"+forecastResultado[i].hora+"<br/>"+forecastResultado[i].temp+"</div>");
+        retorno = retorno + "<div class='item'>"+forecastResultado[i].hora+"<br/>"+forecastResultado[i].temp+"<br/>"+forecastResultado[i].descricao+"</div>";
+    }
+    return retorno;
+}

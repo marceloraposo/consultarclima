@@ -3,6 +3,14 @@
 
 <head>
     <title>Consulte o Tempo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css" />    
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+    <script type="text/javascript" src="Scripts/tempo.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-AVEOJpbqQSyyWGoZrhjQZUMWDHDDZ00 &callback=posicaoMapa"></script>
+    <link type="text/css" href="Style/tempo.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -12,14 +20,11 @@
             <div class="centered">
                 <h1>Consulte o Tempo</h1>
                 <div id="googleMap" style="width:100%;height:400px;"></div>
+                <div id="forecast" style="margin-top:100px;" class="owl-carousel owl-theme"></div>
             </div>
-
         </div>
-    </div>
-    <script type="text/javascript" src="Scripts/jquery-1.7.js"></script>
-    <script type="text/javascript" src="Scripts/tempo.js"></script>
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-AVEOJpbqQSyyWGoZrhjQZUMWDHDDZ00 &callback=posicaoMapa"></script>
-    <link type="text/css" href="Style/tempo.css" rel="stylesheet" />
+    </div>  
+    
 </body>
 
 </html>
