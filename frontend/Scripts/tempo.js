@@ -53,7 +53,7 @@ function consumirForecast(lat, lon) {
     var tempo = '';
 
     $.ajax({
-        url: "http://localhost:8080/tempo/forecast/" + lat + "/" + lon,
+        url: "https://consultarclima-consultarclima.7e14.starter-us-west-2.openshiftapps.com/tempo/forecast/" + lat + "/" + lon,
         type: "GET",
         contentType: "application/json;charset=utf-8",
         dataType: "json",
