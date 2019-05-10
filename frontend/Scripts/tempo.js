@@ -87,6 +87,8 @@ function mostrarMapa(position) {
 
     map.addListener('click', function (evt) {
 
+        $("#forecast").trigger('destroy.owl.carousel');
+        
         myLatlng = { lat: evt.latLng.lat(), lng: evt.latLng.lng() };
 
         marker.setMap(null);
